@@ -54,12 +54,13 @@ function normalizeMacAddress (rawMacAddress) {
 }
 
 var MobileDetect = require('mobile-detect');
-//var md = new MobileDetect(req.headers['user-agent']);
+//var md = new MobileDetect(window.navigator.userAgent);
 var md = new MobileDetect(
     'Mozilla/5.0 (Linux; U; Android 4.0.3; en-in; SonyEricssonMT11i' +
     ' Build/4.1.A.0.562) AppleWebKit/534.30 (KHTML, like Gecko)' +
     ' Version/4.0 Mobile Safari/534.30');
 var isMobile;
+var isM = true;
 const MAC_ADDRESS_REGEXP = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
 
 if (!md.mobile()) {
@@ -121,34 +122,62 @@ export default class CollectDataStage extends Component {
     this.props.onHome();
   }
 
-  renderDeviceRow() {
+  renderMobileDeviceRow() {
     const {deviceObj, errors} = this.props;
     const deviceItems = this.props.devices.map(it => ({text: it}));
 
     if (deviceObj.manufacture) {
       return (
         <div style = {{...rowStyle, ...columnContainerStyle}}>
-          <SelectField
-            value={deviceObj.device}
-            valueMember="text"
-            onChange={this.handleChange.bind(this, "device")}
-            errorText={errors.device}
-            hintText="Select A Device"
-            menuItems={deviceItems}
-          />
-            <IconButton
-              iconClassName="material-icons"
-              tooltipPosition="top-right"
-              tooltip="Add"
-              iconStyle = {{color: "#7e7e7e"}}
-              onClick={this.props.onNewDevice}
-              >add_circle
-            </IconButton>
-        </div>
+          <select
+          value={deviceObj.device}
+          onChange={this.handleChange.bind(this, "device")}
+        >
+          <option>Select A Device</option>
+          {this.props.devices.map(it => <option key={it} value={it}>{it}</option>)}
+        </select>
+        <IconButton
+          iconClassName="material-icons"
+          tooltipPosition="top-right"
+          tooltip="Add"
+          iconStyle = {{color: "#7e7e7e"}}
+          onClick={this.props.onNewDevice}
+          >add_circle
+        </IconButton>
+        </div>  
       )
     } else {
     return null;
     }
+  }
+
+  renderDesktopDeviceRow() {
+    const {deviceObj, errors} = this.props;
+    const deviceItems = this.props.devices.map(it => ({text: it}));
+
+    if (deviceObj.manufacture) {
+      return (
+        <div style = {{...rowStyle, ...columnContainerStyle}}>
+        <select
+          value={deviceObj.device}
+          onChange={this.handleChange.bind(this, "device")}
+        >
+          <option>Select A Device</option>
+          {this.props.manufactures.map(it => <option key={it} value={it}>{it}</option>)}
+        </select>
+        <IconButton
+          iconClassName="material-icons"
+          tooltipPosition="top-right"
+          tooltip="Add"
+          iconStyle = {{color: "#7e7e7e"}}
+          onClick={this.props.onNewDevice}
+          >add_circle
+        </IconButton>
+        </div>
+      );
+    } else {
+    return null;
+    } 
   }
 
   renderMobileManufactureRow () {
@@ -200,22 +229,51 @@ export default class CollectDataStage extends Component {
     );
   }
 
+  renderMobileCountryRow () {
+    const {deviceObj,errors} = this.props;
+    return (
+      <div style = {{...rowStyle, ...columnContainerStyle}}>
+        <select
+          value={deviceObj.country}
+          onChange={this.handleChange.bind(this, "country")}
+        >
+          <option>Select A Country</option>
+          {this.props.countries.map(it => <option key={it} value={it}>{it}</option>)}
+        </select>
+      </div>
+    );
+  }
+
+  renderDesktopCountryRow () {
+    const countryItems = this.props.countries.map(it => ({text: it}));
+    const {deviceObj,errors} = this.props;
+    return (
+      <div style = {{...rowStyle, ...columnContainerStyle}}>
+        <SelectField
+            value={deviceObj.country}
+            valueMember="text"
+            onChange={this.handleChange.bind(this, "country")}
+            errorText={errors.country}
+            hintText="Select Your Country"
+            menuItems={countryItems}
+          />
+        <div style={{width: "48px", height: "48px"}} />
+      </div>
+    );
+  }
+
   render () {
     const manufactureItems = this.props.manufactures.map(it => ({text: it}));
     const deviceItems = this.props.devices.map(it => ({text: it}));
     const countryItems = this.props.countries.map(it => ({text: it}));
     const storeItems = this.props.stores.map(it => ({text: it}));
     const {deviceObj,errors} = this.props;
-    //const {errors} = this.props;
     var isM = true;
-    //if (!md.is('iPhone')) {
-    //  isM = false;
-    // }
     return (
       <div style = {rowContainerStyle}>
         {isM ? this.renderMobileManufactureRow() : this.renderDesktopManufactureRow()}
    
-        {this.renderDeviceRow()}
+        {isM ? this.renderMobileDeviceRow() : this.renderDesktopDeviceRow()}
  
         <div style = {{...rowStyle, ...columnContainerStyle}}>
           <TextField
@@ -238,18 +296,8 @@ export default class CollectDataStage extends Component {
           </IconButton>
         </div>
 
-        <div style = {{...rowStyle, ...columnContainerStyle}}>
-          <SelectField
-            value={deviceObj.country}
-            valueMember="text"
-            onChange={this.handleChange.bind(this, "country")}
-            errorText={errors.country}
-            hintText="Select Your Country"
-            menuItems={countryItems}
-          />
-          <div style={{width: "48px", height: "48px"}} />
-        </div>
-  
+        {isM ? this.renderMobileCountryRow() : this.renderDesktopCountryRow()} 
+        
         <div style = {{...rowStyle, ...columnContainerStyle}}>
           <SelectField
             value={deviceObj.store}

@@ -26,7 +26,7 @@ export default class Root extends Component {
   componentWillMount () {
     this.themeManager = new ThemeManager();
     this.themeManager.setPalette({
-      accent1Color: Colors.cyan500,
+      //accent1Color: Colors.cyan500,
       //primary1Color: Colors.grey200,
     });
     this.themeManager.setComponentThemes({

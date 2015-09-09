@@ -40,8 +40,6 @@ export default class StageChangeContainer extends Component {
 
   state = {
     stage: 0,
-    /*manufactures: null,
-    devices: null,*/
     brandDeviceList: null,
   }
  
@@ -82,7 +80,7 @@ export default class StageChangeContainer extends Component {
           title = {
             <img 
               style={{height: "60px"}}
-              src={require("../images/logo_locarise_inline_retina.png")}
+              src={require("../images/logo_locarise.png")}
             />
           }
           showMenuIconButton = {false}
